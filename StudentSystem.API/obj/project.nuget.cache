@@ -1,0 +1,57 @@
+{
+  "version": 2,
+  "dgSpecHash": "tK4BbkhUU7Y=",
+  "success": false,
+  "projectFilePath": "C:\\Users\\user\\Desktop\\Uni 2026\\WEB Engineering\\project\\StudentSystem.API\\StudentSystem.API.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\user\\.nuget\\packages\\bcrypt.net-next\\4.1.0\\bcrypt.net-next.4.1.0.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\10.0.5\\microsoft.aspnetcore.authentication.jwtbearer.10.0.5.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\microsoft.entityframeworkcore.design\\10.0.5\\microsoft.entityframeworkcore.design.10.0.5.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\microsoft.extensions.apidescription.server\\6.0.5\\microsoft.extensions.apidescription.server.6.0.5.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\microsoft.openapi\\1.6.22\\microsoft.openapi.1.6.22.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\npgsql.entityframeworkcore.postgresql\\10.0.1\\npgsql.entityframeworkcore.postgresql.10.0.1.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\swashbuckle.aspnetcore\\7.2.0\\swashbuckle.aspnetcore.7.2.0.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\swashbuckle.aspnetcore.swagger\\7.2.0\\swashbuckle.aspnetcore.swagger.7.2.0.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\swashbuckle.aspnetcore.swaggergen\\7.2.0\\swashbuckle.aspnetcore.swaggergen.7.2.0.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\swashbuckle.aspnetcore.swaggerui\\7.2.0\\swashbuckle.aspnetcore.swaggerui.7.2.0.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\microsoft.netcore.app.ref\\9.0.13\\microsoft.netcore.app.ref.9.0.13.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\9.0.13\\microsoft.windowsdesktop.app.ref.9.0.13.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\9.0.13\\microsoft.aspnetcore.app.ref.9.0.13.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\9.0.13\\microsoft.netcore.app.host.win-x64.9.0.13.nupkg.sha512"
+  ],
+  "logs": [
+    {
+      "code": "NU1202",
+      "level": "Error",
+      "message": "Package Microsoft.AspNetCore.Authentication.JwtBearer 10.0.5 is not compatible with net9.0 (.NETCoreApp,Version=v9.0). Package Microsoft.AspNetCore.Authentication.JwtBearer 10.0.5 supports: net10.0 (.NETCoreApp,Version=v10.0)",
+      "projectPath": "C:\\Users\\user\\Desktop\\Uni 2026\\WEB Engineering\\project\\StudentSystem.API\\StudentSystem.API.csproj",
+      "filePath": "C:\\Users\\user\\Desktop\\Uni 2026\\WEB Engineering\\project\\StudentSystem.API\\StudentSystem.API.csproj",
+      "libraryId": "Microsoft.AspNetCore.Authentication.JwtBearer",
+      "targetGraphs": [
+        "net9.0"
+      ]
+    },
+    {
+      "code": "NU1202",
+      "level": "Error",
+      "message": "Package Microsoft.EntityFrameworkCore.Design 10.0.5 is not compatible with net9.0 (.NETCoreApp,Version=v9.0). Package Microsoft.EntityFrameworkCore.Design 10.0.5 supports: net10.0 (.NETCoreApp,Version=v10.0)",
+      "projectPath": "C:\\Users\\user\\Desktop\\Uni 2026\\WEB Engineering\\project\\StudentSystem.API\\StudentSystem.API.csproj",
+      "filePath": "C:\\Users\\user\\Desktop\\Uni 2026\\WEB Engineering\\project\\StudentSystem.API\\StudentSystem.API.csproj",
+      "libraryId": "Microsoft.EntityFrameworkCore.Design",
+      "targetGraphs": [
+        "net9.0"
+      ]
+    },
+    {
+      "code": "NU1202",
+      "level": "Error",
+      "message": "Package Npgsql.EntityFrameworkCore.PostgreSQL 10.0.1 is not compatible with net9.0 (.NETCoreApp,Version=v9.0). Package Npgsql.EntityFrameworkCore.PostgreSQL 10.0.1 supports: net10.0 (.NETCoreApp,Version=v10.0)",
+      "projectPath": "C:\\Users\\user\\Desktop\\Uni 2026\\WEB Engineering\\project\\StudentSystem.API\\StudentSystem.API.csproj",
+      "filePath": "C:\\Users\\user\\Desktop\\Uni 2026\\WEB Engineering\\project\\StudentSystem.API\\StudentSystem.API.csproj",
+      "libraryId": "Npgsql.EntityFrameworkCore.PostgreSQL",
+      "targetGraphs": [
+        "net9.0"
+      ]
+    }
+  ]
+}
