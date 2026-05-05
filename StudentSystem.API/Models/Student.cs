@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace StudentSystem.API.Models;
 
@@ -23,6 +24,10 @@ public class Student
     public double GPA { get; set; }
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    [ForeignKey("User")]
+    public int? UserId { get; set; }
+    public User? User { get; set; }
 
     public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
 }

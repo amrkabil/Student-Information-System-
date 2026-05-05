@@ -21,18 +21,22 @@ public class CourseService : ICourseService
     public CourseService(AppDbContext context) => _context = context;
 
     public async Task<IEnumerable<CourseReadDto>> GetAllAsync() =>
-        await _context.Courses.AsNoTracking().Select(c => new CourseReadDto
-        {
-            Id = c.Id,
-            Title = c.Title,
-            Description = c.Description,
-            Credits = c.Credits,
-            CreatedAt = c.CreatedAt,
-            InstructorId = c.InstructorId
-        }).ToListAsync();
+        await _context.Courses.AsNoTracking()
+            .Include(c => c.Instructor).ThenInclude(i => i.User)
+            .Select(c => new CourseReadDto
+            {
+                Id = c.Id,
+                Title = c.Title,
+                Description = c.Description,
+                Credits = c.Credits,
+                CreatedAt = c.CreatedAt,
+                InstructorId = c.InstructorId,
+                InstructorUsername = c.Instructor.User != null ? c.Instructor.User.Username : c.Instructor.FirstName
+            }).ToListAsync();
 
     public async Task<CourseReadDto?> GetByIdAsync(int id) =>
         await _context.Courses.AsNoTracking()
+            .Include(c => c.Instructor).ThenInclude(i => i.User)
             .Where(c => c.Id == id)
             .Select(c => new CourseReadDto
             {
@@ -41,7 +45,8 @@ public class CourseService : ICourseService
                 Description = c.Description,
                 Credits = c.Credits,
                 CreatedAt = c.CreatedAt,
-                InstructorId = c.InstructorId
+                InstructorId = c.InstructorId,
+                InstructorUsername = c.Instructor.User != null ? c.Instructor.User.Username : c.Instructor.FirstName
             }).FirstOrDefaultAsync();
 
     public async Task<CourseReadDto> CreateAsync(CourseCreateDto dto)
@@ -55,15 +60,19 @@ public class CourseService : ICourseService
         };
         _context.Courses.Add(course);
         await _context.SaveChangesAsync();
-        return new CourseReadDto
-        {
-            Id = course.Id,
-            Title = course.Title,
-            Description = course.Description,
-            Credits = course.Credits,
-            InstructorId = course.InstructorId,
-            CreatedAt = course.CreatedAt
-        };
+        return await _context.Courses.AsNoTracking()
+            .Include(c => c.Instructor).ThenInclude(i => i.User)
+            .Where(c => c.Id == course.Id)
+            .Select(c => new CourseReadDto
+            {
+                Id = c.Id,
+                Title = c.Title,
+                Description = c.Description,
+                Credits = c.Credits,
+                InstructorId = c.InstructorId,
+                InstructorUsername = c.Instructor.User != null ? c.Instructor.User.Username : c.Instructor.FirstName,
+                CreatedAt = c.CreatedAt
+            }).FirstAsync();
     }
 
     public async Task<bool> UpdateAsync(int id, CourseUpdateDto dto)

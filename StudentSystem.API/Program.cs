@@ -8,6 +8,17 @@ using StudentSystem.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// 0. Register CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:3000")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 // 1. Register DbContext
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -96,6 +107,8 @@ using (var scope = app.Services.CreateScope())
 }
 
 // 6. Middleware Pipeline
+app.UseCors("AllowFrontend");
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

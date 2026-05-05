@@ -16,9 +16,31 @@ public class AppDbContext : DbContext
     public DbSet<Enrollment> Enrollments { get; set; } = null!;
     public DbSet<User> Users { get; set; } = null!;
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
+    }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        // Unique constraints
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.Username)
+            .IsUnique();
+
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.Email)
+            .IsUnique();
+
+        modelBuilder.Entity<Student>()
+            .HasIndex(s => s.Email)
+            .IsUnique();
+
+        modelBuilder.Entity<Instructor>()
+            .HasIndex(i => i.Email)
+            .IsUnique();
 
         // One-to-one: Instructor <-> InstructorProfile
         modelBuilder.Entity<Instructor>()
@@ -36,9 +58,7 @@ public class AppDbContext : DbContext
 
         // Seed Users
         modelBuilder.Entity<User>().HasData(
-            new User { Id = 1, Username = "admin", Email = "admin@system.com", PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin@123"), Role = "Admin" },
-            new User { Id = 2, Username = "instructor1", Email = "instructor1@system.com", PasswordHash = BCrypt.Net.BCrypt.HashPassword("Instructor@123"), Role = "Instructor" },
-            new User { Id = 3, Username = "student1", Email = "student1@system.com", PasswordHash = BCrypt.Net.BCrypt.HashPassword("Student@123"), Role = "Student" }
+            new User { Id = 1, Username = "admin", Email = "admin@system.com", PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin@123"), Role = "Admin" }
         );
 
         // Seed Instructors
@@ -68,9 +88,9 @@ public class AppDbContext : DbContext
 
         // Seed Enrollments
         modelBuilder.Entity<Enrollment>().HasData(
-            new Enrollment { Id = 1, StudentId = 1, CourseId = 1, Grade = 4.0, EnrollmentDate = DateTime.UtcNow.AddMonths(-2) },
-            new Enrollment { Id = 2, StudentId = 1, CourseId = 2, Grade = 3.7, EnrollmentDate = DateTime.UtcNow.AddMonths(-1) },
-            new Enrollment { Id = 3, StudentId = 2, CourseId = 3, Grade = 3.5, EnrollmentDate = DateTime.UtcNow.AddMonths(-2) }
+            new Enrollment { Id = 1, StudentId = 1, CourseId = 1, Grade = 4.0, EnrollmentDate = new DateTime(2026, 3, 5) },
+            new Enrollment { Id = 2, StudentId = 1, CourseId = 2, Grade = 3.7, EnrollmentDate = new DateTime(2026, 4, 5) },
+            new Enrollment { Id = 3, StudentId = 2, CourseId = 3, Grade = 3.5, EnrollmentDate = new DateTime(2026, 3, 5) }
         );
     }
 }

@@ -21,25 +21,30 @@ public class StudentService : IStudentService
     public StudentService(AppDbContext context) => _context = context;
 
     public async Task<IEnumerable<StudentReadDto>> GetAllAsync() =>
-        await _context.Students.AsNoTracking().Select(s => new StudentReadDto
-        {
-            Id = s.Id,
-            FirstName = s.FirstName,
-            LastName = s.LastName,
-            Email = s.Email,
-            DateOfBirth = s.DateOfBirth,
-            GPA = s.GPA,
-            CreatedAt = s.CreatedAt
-        }).ToListAsync();
+        await _context.Students.AsNoTracking()
+            .Include(s => s.User)
+            .Select(s => new StudentReadDto
+            {
+                Id = s.Id,
+                FirstName = s.FirstName,
+                LastName = s.LastName,
+                Username = s.User != null ? s.User.Username : s.FirstName,
+                Email = s.Email,
+                DateOfBirth = s.DateOfBirth,
+                GPA = s.GPA,
+                CreatedAt = s.CreatedAt
+            }).ToListAsync();
 
     public async Task<StudentReadDto?> GetByIdAsync(int id) =>
         await _context.Students.AsNoTracking()
+            .Include(s => s.User)
             .Where(s => s.Id == id)
             .Select(s => new StudentReadDto
             {
                 Id = s.Id,
                 FirstName = s.FirstName,
                 LastName = s.LastName,
+                Username = s.User != null ? s.User.Username : s.FirstName,
                 Email = s.Email,
                 DateOfBirth = s.DateOfBirth,
                 GPA = s.GPA,
@@ -48,13 +53,27 @@ public class StudentService : IStudentService
 
     public async Task<StudentReadDto> CreateAsync(StudentCreateDto dto)
     {
+        // 1. Create the User account for login
+        var username = dto.Email.Split('@')[0]; // Simple username from email
+        var user = new User
+        {
+            Username = username,
+            Email = dto.Email,
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword("Password123"), // Default password
+            Role = "Student"
+        };
+        _context.Users.Add(user);
+        await _context.SaveChangesAsync();
+
+        // 2. Create the Student profile linked to the User
         var student = new Student
         {
             FirstName = dto.FirstName,
             LastName = dto.LastName,
             Email = dto.Email,
             DateOfBirth = dto.DateOfBirth,
-            GPA = dto.GPA
+            GPA = dto.GPA,
+            UserId = user.Id
         };
         _context.Students.Add(student);
         await _context.SaveChangesAsync();

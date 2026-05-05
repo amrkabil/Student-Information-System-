@@ -22,6 +22,10 @@ public class Instructor
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+    [ForeignKey("User")]
+    public int? UserId { get; set; }
+    public User? User { get; set; }
+
     public InstructorProfile? InstructorProfile { get; set; }
     public ICollection<Course> Courses { get; set; } = new List<Course>();
 }

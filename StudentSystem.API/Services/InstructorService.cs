@@ -22,32 +22,39 @@ public class InstructorService : IInstructorService
     public InstructorService(AppDbContext context) => _context = context;
 
     public async Task<IEnumerable<InstructorReadDto>> GetAllAsync() =>
-        await _context.Instructors.AsNoTracking().Select(i => new InstructorReadDto
-        {
-            Id = i.Id,
-            FirstName = i.FirstName,
-            LastName = i.LastName,
-            Email = i.Email,
-            Department = i.Department,
-            CreatedAt = i.CreatedAt,
-            InstructorProfile = i.InstructorProfile == null ? null : new InstructorProfileReadDto
+        await _context.Instructors.AsNoTracking()
+            .Include(i => i.User)
+            .Include(i => i.InstructorProfile)
+            .Select(i => new InstructorReadDto
             {
-                Id = i.InstructorProfile.Id,
-                Bio = i.InstructorProfile.Bio,
-                Office = i.InstructorProfile.Office,
-                YearsOfExperience = i.InstructorProfile.YearsOfExperience,
-                InstructorId = i.InstructorProfile.InstructorId
-            }
-        }).ToListAsync();
+                Id = i.Id,
+                FirstName = i.FirstName,
+                LastName = i.LastName,
+                Username = i.User != null ? i.User.Username : i.FirstName,
+                Email = i.Email,
+                Department = i.Department,
+                CreatedAt = i.CreatedAt,
+                InstructorProfile = i.InstructorProfile == null ? null : new InstructorProfileReadDto
+                {
+                    Id = i.InstructorProfile.Id,
+                    Bio = i.InstructorProfile.Bio,
+                    Office = i.InstructorProfile.Office,
+                    YearsOfExperience = i.InstructorProfile.YearsOfExperience,
+                    InstructorId = i.InstructorProfile.InstructorId
+                }
+            }).ToListAsync();
 
     public async Task<InstructorReadDto?> GetByIdAsync(int id) =>
         await _context.Instructors.AsNoTracking()
+            .Include(i => i.User)
+            .Include(i => i.InstructorProfile)
             .Where(i => i.Id == id)
             .Select(i => new InstructorReadDto
             {
                 Id = i.Id,
                 FirstName = i.FirstName,
                 LastName = i.LastName,
+                Username = i.User != null ? i.User.Username : i.FirstName,
                 Email = i.Email,
                 Department = i.Department,
                 CreatedAt = i.CreatedAt,
@@ -63,12 +70,26 @@ public class InstructorService : IInstructorService
 
     public async Task<InstructorReadDto> CreateAsync(InstructorCreateDto dto)
     {
+        // 1. Create the User account for login
+        var username = dto.Email.Split('@')[0]; // Simple username from email
+        var user = new User
+        {
+            Username = username,
+            Email = dto.Email,
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword("Password123"), // Default password
+            Role = "Instructor"
+        };
+        _context.Users.Add(user);
+        await _context.SaveChangesAsync();
+
+        // 2. Create the Instructor profile linked to the User
         var instructor = new Instructor
         {
             FirstName = dto.FirstName,
             LastName = dto.LastName,
             Email = dto.Email,
-            Department = dto.Department
+            Department = dto.Department,
+            UserId = user.Id
         };
         _context.Instructors.Add(instructor);
         await _context.SaveChangesAsync();

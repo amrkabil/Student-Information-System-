@@ -22,19 +22,22 @@ public class EnrollmentService : IEnrollmentService
     public EnrollmentService(AppDbContext context) => _context = context;
 
     public async Task<IEnumerable<EnrollmentReadDto>> GetAllAsync() =>
-        await _context.Enrollments.AsNoTracking().Select(e => new EnrollmentReadDto
-        {
-            Id = e.Id,
-            Grade = e.Grade,
-            EnrollmentDate = e.EnrollmentDate,
-            StudentId = e.StudentId,
-            CourseId = e.CourseId,
-            StudentName = e.Student.FirstName + " " + e.Student.LastName,
-            CourseTitle = e.Course.Title
-        }).ToListAsync();
+        await _context.Enrollments.AsNoTracking()
+            .Include(e => e.Student).ThenInclude(s => s.User)
+            .Select(e => new EnrollmentReadDto
+            {
+                Id = e.Id,
+                Grade = e.Grade,
+                EnrollmentDate = e.EnrollmentDate,
+                StudentId = e.StudentId,
+                CourseId = e.CourseId,
+                StudentName = e.Student.User != null ? e.Student.User.Username : e.Student.FirstName,
+                CourseTitle = e.Course.Title
+            }).ToListAsync();
 
     public async Task<EnrollmentReadDto?> GetByIdAsync(int id) =>
         await _context.Enrollments.AsNoTracking()
+            .Include(e => e.Student).ThenInclude(s => s.User)
             .Where(e => e.Id == id)
             .Select(e => new EnrollmentReadDto
             {
@@ -43,7 +46,7 @@ public class EnrollmentService : IEnrollmentService
                 EnrollmentDate = e.EnrollmentDate,
                 StudentId = e.StudentId,
                 CourseId = e.CourseId,
-                StudentName = e.Student.FirstName + " " + e.Student.LastName,
+                StudentName = e.Student.User != null ? e.Student.User.Username : e.Student.FirstName,
                 CourseTitle = e.Course.Title
             }).FirstOrDefaultAsync();
 
@@ -60,6 +63,7 @@ public class EnrollmentService : IEnrollmentService
 
         // Refresh to get navigation properties
         return await _context.Enrollments.AsNoTracking()
+            .Include(e => e.Student).ThenInclude(s => s.User)
             .Where(e => e.Id == enrollment.Id)
             .Select(e => new EnrollmentReadDto
             {
@@ -68,7 +72,7 @@ public class EnrollmentService : IEnrollmentService
                 EnrollmentDate = e.EnrollmentDate,
                 StudentId = e.StudentId,
                 CourseId = e.CourseId,
-                StudentName = e.Student.FirstName + " " + e.Student.LastName,
+                StudentName = e.Student.User != null ? e.Student.User.Username : e.Student.FirstName,
                 CourseTitle = e.Course.Title
             }).FirstAsync();
     }

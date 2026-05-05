@@ -26,8 +26,11 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterDto dto)
     {
-        if (await _context.Users.AnyAsync(u => u.Username == dto.Username || u.Email == dto.Email))
-            return Conflict("Username or Email already exists.");
+        if (await _context.Users.AnyAsync(u => u.Username == dto.Username))
+            return Conflict("Username already exists.");
+        
+        if (await _context.Users.AnyAsync(u => u.Email == dto.Email))
+            return Conflict("Email already exists.");
 
         var user = new User
         {
@@ -40,6 +43,35 @@ public class AuthController : ControllerBase
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
 
+        // Automatically create Profile based on Role
+        if (dto.Role == "Student")
+        {
+            var student = new Student
+            {
+                FirstName = dto.Username, // Placeholder
+                LastName = "Student",    // Placeholder
+                Email = dto.Email,
+                DateOfBirth = DateTime.UtcNow.AddYears(-20), // Default DOB
+                GPA = 0.0,
+                UserId = user.Id
+            };
+            _context.Students.Add(student);
+        }
+        else if (dto.Role == "Instructor")
+        {
+            var instructor = new Instructor
+            {
+                FirstName = dto.Username, // Placeholder
+                LastName = "Instructor", // Placeholder
+                Email = dto.Email,
+                Department = "General", // Default Dept
+                UserId = user.Id
+            };
+            _context.Instructors.Add(instructor);
+        }
+
+        await _context.SaveChangesAsync();
+
         return CreatedAtAction(nameof(Login), new { username = user.Username }, "User registered successfully.");
     }
 
@@ -49,7 +81,7 @@ public class AuthController : ControllerBase
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == dto.Username);
 
         if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
-            return Unauthorized("Invalid username or password.");
+            return Unauthorized("Wrong username or password");
 
         var token = GenerateJwtToken(user);
 
